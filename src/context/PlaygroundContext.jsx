@@ -29,6 +29,20 @@ export const languageMap = {
     "javascript": {
         id: 63,
         defaultCode: `console.log("Hello World!");`,
+    },
+    "typescript": {
+        id: 74,
+        defaultCode: `function greet(name: string): string {
+    return \`Hello, \${name}!\`;
+}
+
+console.log(greet("World"));`,
+    },
+    "rust": {
+        id: 73,
+        defaultCode: `fn main() {
+    println!("Hello World!");
+}`,
     }
 }
 

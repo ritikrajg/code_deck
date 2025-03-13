@@ -2,22 +2,24 @@
   "name": "code_deck_coding_ide",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://yourusername.github.io/code-editor",
   "dependencies": {
     "@codemirror/lang-cpp": "^6.0.2",
     "@codemirror/lang-java": "^6.0.1",
-    "@codemirror/lang-javascript": "^6.1.1",
-    "@codemirror/lang-python": "^6.1.0",
+    "@codemirror/lang-javascript": "^6.2.2",
+    "@codemirror/lang-python": "^6.1.7",
+    "@codemirror/lang-rust": "^6.0.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "@uiw/codemirror-theme-bespin": "^4.15.1",
-    "@uiw/codemirror-theme-dracula": "^4.15.1",
-    "@uiw/codemirror-theme-duotone": "^4.15.1",
-    "@uiw/codemirror-theme-github": "^4.15.1",
-    "@uiw/codemirror-theme-okaidia": "^4.15.1",
-    "@uiw/codemirror-theme-vscode": "^4.15.1",
-    "@uiw/codemirror-theme-xcode": "^4.15.1",
-    "@uiw/react-codemirror": "^4.15.1",
+    "@uiw/codemirror-theme-bespin": "^4.23.7",
+    "@uiw/codemirror-theme-dracula": "^4.23.7",
+    "@uiw/codemirror-theme-duotone": "^4.23.7",
+    "@uiw/codemirror-theme-github": "^4.23.7",
+    "@uiw/codemirror-theme-okaidia": "^4.23.7",
+    "@uiw/codemirror-theme-vscode": "^4.23.7",
+    "@uiw/codemirror-theme-xcode": "^4.23.7",
+    "@uiw/react-codemirror": "^4.23.7",
     "axios": "^1.2.0",
     "buffer": "^6.0.3",
     "react": "^18.2.0",
@@ -34,7 +36,10 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "setup": "npm install && npm start",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -53,5 +58,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0",
+    "update-browserslist-db": "^1.1.3"
   }
 }

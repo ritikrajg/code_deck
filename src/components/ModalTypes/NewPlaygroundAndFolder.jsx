@@ -43,7 +43,9 @@ const NewPlaygroundAndFolder = () => {
     { value: "cpp", label: "cpp" },
     { value: "java", label: "java" },
     { value: "javascript", label: "javascript" },
+    { value: "typescript", label: "typescript" },
     { value: "python", label: "python" },
+    { value: "rust", label: "rust" },
   ];
 
   const [playgroundName, setPlaygroundName] = useState("")

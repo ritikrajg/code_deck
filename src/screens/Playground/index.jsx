@@ -10,6 +10,7 @@ import { ModalContext } from '../../context/ModalContext'
 import Modal from '../../components/Modal'
 import { Buffer } from 'buffer'
 import axios from 'axios'
+
 const MainContainer = styled.div`
   display: grid;
   grid-template-columns: ${({ isFullScreen }) => isFullScreen ? '1fr' : '2fr 1fr'};
@@ -26,6 +27,9 @@ const Consoles = styled.div`
   grid-template-columns: 1fr;
 `
 
+// Get API key from environment variable or use a fallback for development
+const RAPID_API_KEY = process.env.REACT_APP_RAPID_API_KEY ;
+
 const Playground = () => {
   const { folderId, playgroundId } = useParams()
   const { folders, savePlayground } = useContext(PlaygroundContext)
@@ -37,6 +41,8 @@ const Playground = () => {
   const [currentInput, setCurrentInput] = useState('')
   const [currentOutput, setCurrentOutput] = useState('')
   const [isFullScreen, setIsFullScreen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState(null)
 
   // all logic of the playground
   const saveCode = () => {
@@ -52,86 +58,108 @@ const Playground = () => {
   }
 
   const postSubmission = async (language_id, source_code, stdin) => {
-    const options = {
-      method: 'POST',
-      url: 'https://judge0-ce.p.rapidapi.com/submissions',
-      params: { base64_encoded: 'true', fields: '*' },
-      headers: {
-        'content-type': 'application/json',
-        'Content-Type': 'application/json',
-        'X-RapidAPI-Key': 'b4e5c5a05fmsh9adf6ec091523f8p165338jsncc58f31c26e1',
-        'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com'
-      },
-      data: JSON.stringify({
-        language_id: language_id,
-        source_code: source_code,
-        stdin: stdin
-      })
-    };
+    try {
+      setError(null);
+      const options = {
+        method: 'POST',
+        url: 'https://judge0-ce.p.rapidapi.com/submissions',
+        params: { base64_encoded: 'true', fields: '*' },
+        headers: {
+          'content-type': 'application/json',
+          'Content-Type': 'application/json',
+          'X-RapidAPI-Key': RAPID_API_KEY,
+          'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com'
+        },
+        data: JSON.stringify({
+          language_id: language_id,
+          source_code: source_code,
+          stdin: stdin
+        })
+      };
 
-    const res = await axios.request(options);
-    return res.data.token
+      const res = await axios.request(options);
+      return res.data.token;
+    } catch (err) {
+      console.error('Error submitting code:', err);
+      setError('Failed to submit code. Please try again later.');
+      throw err;
+    }
   }
 
   const getOutput = async (token) => {
-    // we will make api call here
-    const options = {
-      method: 'GET',
-      url: "https://judge0-ce.p.rapidapi.com/submissions/" + token,
-      params: { base64_encoded: 'true', fields: '*' },
-      headers: {
-        'X-RapidAPI-Key': '3ed7a75b44mshc9e28568fe0317bp17b5b2jsn6d89943165d8',
-        'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com'
-      }
-    };
+    try {
+      // we will make api call here
+      const options = {
+        method: 'GET',
+        url: "https://judge0-ce.p.rapidapi.com/submissions/" + token,
+        params: { base64_encoded: 'true', fields: '*' },
+        headers: {
+          'X-RapidAPI-Key': RAPID_API_KEY,
+          'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com'
+        }
+      };
 
-    // call the api
-    const res = await axios.request(options);
-    if (res.data.status_id <= 2) {
-      const res2 = await getOutput(token);
-      return res2.data;
+      // call the api
+      const res = await axios.request(options);
+      if (res.data.status_id <= 2) {
+        const res2 = await getOutput(token);
+        return res2.data;
+      }
+      return res.data;
+    } catch (err) {
+      console.error('Error getting output:', err);
+      setError('Failed to get code output. Please try again later.');
+      throw err;
     }
-    return res.data;
   }
 
   const runCode = async () => {
-    openModal({
-      show: true,
-      modalType: 6,
-      identifiers: {
-        folderId: "",
-        cardId: "",
-      }
-    })
-    const language_id = languageMap[currentLanguage].id;
-    const source_code = encode(currentCode);
-    const stdin = encode(currentInput);
+    try {
+      setIsLoading(true);
+      setError(null);
+      openModal({
+        show: true,
+        modalType: 6,
+        identifiers: {
+          folderId: "",
+          cardId: "",
+        }
+      })
+      const language_id = languageMap[currentLanguage].id;
+      const source_code = encode(currentCode);
+      const stdin = encode(currentInput);
 
-    // pass these things to Create Submissions
-    const token = await postSubmission(language_id, source_code, stdin);
+      // pass these things to Create Submissions
+      const token = await postSubmission(language_id, source_code, stdin);
 
-    // get the output
-    const res = await getOutput(token);
-    const status_name = res.status.description;
-    const decoded_output = decode(res.stdout ? res.stdout : '');
-    const decoded_compile_output = decode(res.compile_output ? res.compile_output : '');
-    const decoded_error = decode(res.stderr ? res.stderr : '');
+      // get the output
+      const res = await getOutput(token);
+      const status_name = res.status.description;
+      const decoded_output = decode(res.stdout ? res.stdout : '');
+      const decoded_compile_output = decode(res.compile_output ? res.compile_output : '');
+      const decoded_error = decode(res.stderr ? res.stderr : '');
 
-    let final_output = '';
-    if (res.status_id !== 3) {
-      // our code have some error
-      if (decoded_compile_output === "") {
-        final_output = decoded_error;
+      let final_output = '';
+      if (res.status_id !== 3) {
+        // our code have some error
+        if (decoded_compile_output === "") {
+          final_output = decoded_error;
+        }
+        else {
+          final_output = decoded_compile_output;
+        }
       }
       else {
-        final_output = decoded_compile_output;
+        final_output = decoded_output;
       }
+      setCurrentOutput(status_name + "\n\n" + final_output);
+      closeModal();
+    } catch (err) {
+      console.error('Error running code:', err);
+      setError('Failed to run code. Please try again later.');
+    } finally {
+      setIsLoading(false);
     }
-    else {
-      final_output = decoded_output;
-    }
-    setCurrentOutput(status_name + "\n\n" + final_output);
-    closeModal();
   }
 
   const getFile = (e, setState) => {
@@ -184,6 +212,8 @@ const Playground = () => {
           />
           <OutputConsole
             currentOutput={currentOutput}
+            isLoading={isLoading}
+            error={error}
           />
         </Consoles>
       </MainContainer>

@@ -14,7 +14,7 @@ const StyledEditorContainer = styled.div`
 `
 
 const UpperToolBar = styled.div`
-  background: #fff;
+  background: var(--background-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -65,7 +65,8 @@ const SelectBars = styled.div`
 const Button = styled.button`
   padding: 0.7rem 0.4rem;
   width: 6.2rem;
-  background: #0097d7;
+  background: var(--primary-color);
+  color: white;
   border: none;
   border-radius: 32px;
   font-weight: 700;
@@ -98,7 +99,7 @@ const LowerToolBar = styled.div`
     display: flex;
     align-items: center;
     gap: 0.7rem;
-    color: black;
+    color: var(--text-color);
   }
   button:first-child{
     background: none;
@@ -110,7 +111,8 @@ const LowerToolBar = styled.div`
 `
 const SaveAndRunButton = styled.button`
   padding: 0.6rem 1rem;
-  background: #0097d7;
+  background: var(--primary-color);
+  color: white;
   border: none;
   border-radius: 32px;
   font-weight: 700;
@@ -149,8 +151,10 @@ const EditorContainer = ({
   const languageOptions = [
     { value: 'cpp', label: 'cpp' },
     { value: 'javascript', label: 'javascript' },
+    { value: 'typescript', label: 'typescript' },
     { value: 'java', label: 'java' },
     { value: 'python', label: 'python' },
+    { value: 'rust', label: 'rust' },
   ]
 
   const handleThemeChange = (selectedOption) => {

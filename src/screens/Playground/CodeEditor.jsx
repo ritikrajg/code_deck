@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react'
-import styled from 'styled-components'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 // npm i @uiw/react-codemirror
 import CodeMirror from '@uiw/react-codemirror'
 // npm i @uiw/codemirror-theme-bespin @uiw/codemirror-theme-duotone @uiw/codemirror-theme-dracula @uiw/codemirror-theme-github @uiw/codemirror-theme-xcode @uiw/codemirror-theme-vscode @uiw/codemirror-theme-okaidia
@@ -13,15 +12,13 @@ import { xcodeDark, xcodeLight } from '@uiw/codemirror-theme-xcode'
 import { vscodeDark } from '@uiw/codemirror-theme-vscode'
 import { okaidia } from '@uiw/codemirror-theme-okaidia'
 
-// npm i @codemirror/lang-cpp @codemirror/lang-java @codemirror/lang-javascript @codemirror/lang-python
 
-// language
 import { cpp } from '@codemirror/lang-cpp'
 import { java } from '@codemirror/lang-java'
 import { javascript } from '@codemirror/lang-javascript'
 import { python } from '@codemirror/lang-python'
+import { rust } from '@codemirror/lang-rust'
 
-//configuration
 import { indentUnit } from '@codemirror/language'
 import { EditorState } from '@codemirror/state'
 
@@ -39,7 +36,9 @@ const CodeEditor = ({
         if (currentLanguage === 'cpp') setLanguage(cpp);
         if (currentLanguage === 'java') setLanguage(java);
         if (currentLanguage === 'javascript') setLanguage(javascript);
+        if (currentLanguage === 'typescript') setLanguage(javascript({ jsx: true, typescript: true }));
         if (currentLanguage === 'python') setLanguage(python);
+        if (currentLanguage === 'rust') setLanguage(rust);
     }, [currentLanguage])
 
 
@@ -56,18 +55,26 @@ const CodeEditor = ({
         if (currentTheme === 'okaidia') setTheme(okaidia);
     }, [currentTheme])
 
+    // Memoize the onChange handler to prevent unnecessary re-renders
+    const handleChange = useCallback((value) => {
+        setCurrentCode(value);
+    }, [setCurrentCode]);
+
+    // Memoize the extensions to prevent unnecessary re-creation
+    const extensions = useMemo(() => [
+        language,
+        indentUnit.of("        "),
+        EditorState.tabSize.of(8),
+        EditorState.changeFilter.of(() => true)
+    ], [language]);
+
     return (
         <CodeMirror
             value={currentCode}
             height="100%"
             theme={theme}
-            extensions={[
-                language,
-                indentUnit.of("        "),
-                EditorState.tabSize.of(8),
-                EditorState.changeFilter.of(() => true)
-            ]}
-            onChange={(value) => setCurrentCode(value)}
+            extensions={extensions}
+            onChange={handleChange}
             basicSetup={{
                 lineNumbers: true,
                 highlightActiveLineGutter: true,
@@ -98,4 +105,5 @@ const CodeEditor = ({
     )
 }
 
-export default CodeEditor
+// Wrap with React.memo to prevent unnecessary re-renders
+export default React.memo(CodeEditor)
