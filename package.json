@@ -1,8 +1,8 @@
 {
-  "name": "code_deck_coding_ide",
+  "name": "code_deck",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://yourusername.github.io/code-editor",
+  "homepage": "https://ritikrajg.github.io/code_deck",
   "dependencies": {
     "@codemirror/lang-cpp": "^6.0.2",
     "@codemirror/lang-java": "^6.0.1",
