@@ -2,7 +2,7 @@
   "name": "code_deck_coding_ide",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://ritikrajg.github.io/code_deck",
+  "homepage": "https://ritikrajg.github.io/code_deck/public",
   "dependencies": {
     "@codemirror/lang-cpp": "^6.0.2",
     "@codemirror/lang-java": "^6.0.1",
