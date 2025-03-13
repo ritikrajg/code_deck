@@ -39,7 +39,7 @@ Before you begin, ensure you have the following installed:
 1. Clone the repository:
    ```bash
    git clone https://github.com/ritikrajg/code_deck
-   cd code-editor
+   cd code_deck
    ```
 
 2. Install dependencies:
