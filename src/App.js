@@ -8,14 +8,11 @@ import PlaygroundProvider from './context/PlaygroundContext';
 import ThemeProvider from './context/ThemeContext';
 
 function App() {
-  // Get the basename from the homepage in package.json
-  const basename = process.env.PUBLIC_URL;
-
   return (
     <ThemeProvider>
       <PlaygroundProvider>
         <ModalProvider>
-          <BrowserRouter basename={basename}>
+          <BrowserRouter>
             <GlobalStyle />
             <Routes>
               <Route path="/" element={<Home />} />
